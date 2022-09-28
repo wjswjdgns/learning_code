@@ -7,3 +7,6 @@ def solution(base):
 
 N = int(input())
 print(solution(N))
+
+
+
