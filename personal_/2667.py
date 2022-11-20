@@ -15,48 +15,53 @@ from collections import deque
 import sys
 input = sys.stdin.readline
 
-N = int(input())
-road = []
-for _ in range(N):
-    road.append(list(map(int,input().rstrip()))) # 길 등록
-
-move = [(-1,0),(1,0),(0,-1),(0,1)] #방향 상하좌우
-use_road = []
-count = 2
-
-# 갈 수 있는 길을 먼저 파악을 한다.
-for i in range(N):
-    for j in range(N):
-        if int(road[i][j]) == 1:
-            use_road.append((i,j))
-
-for start in use_road:
-    y = start[0]
-    x = start[1]
-    if int(road[y][x]) != 1: #이미 진행이 완료 되었다면 넘어가라
-        continue
+def bfs(graph, y, x):
+    n = len(graph)
     queue = deque()
     queue.append((y,x))
-    #그룹 찾기 진행
+    graph[y][x] = 0 #이미 지나온 곳을 0으로 표시
+    count = 1 # 총 갯수 표시
+
+    #반복하며 
     while queue:
-        y,x = queue.popleft()
-        for move_y, move_x in move:
-            check_x = x+ move_x
-            check_y = y+ move_y
-            if 0 <= check_x < N and 0 <= check_y < N: #범위에서 벗어나지 않았을 때
-                if int(road[check_y][check_x]) == 1: #갈 수 있는 길이라면
-                    road[check_y][check_x] = count
-                    queue.append((check_y, check_x))
+        y,x = queue.popleft() #값 꺼내기
+        
+        for m_y, m_x in move:
+            ny = y + m_y #y좌표로 이동 
+            nx = x + m_x #x좌표로 이동
 
-    count +=1 #queue가 끝나는 경우 count를 올려준다.
+            #경로에 벗어 났을 경우 넘어간다. 
+            if (ny < 0 or ny >= N) or (nx < 0 or nx >=N):
+                continue
+            
+            # 갈 수 있는 길이라면
+            if graph[ny][nx] == 1: 
+                graph[ny][nx] = 0 #이미 갔다는 표시하고
+                queue.append((ny, nx)) #큐에 담고
+                count += 1 #카운트를 늘린다.
+  
+    return count
 
-result_list = []
-for y,x in use_road:
-    result_list.append(road[y][x])
+value = []
+N = int(input()) # 정사각형 크기
 
-result_list.sort()
+for i in range(N): #N개의 자료
+    value.append(list(map(int, input().rstrip()))) #앞쪽에 0이 있기 때문에
 
-print(count-2) # 총 단지 수
-for check in range(2,count):
-    print(result_list.count(check))
-    
+move = [(-1,0),(1,0),(0,-1),(0,1)] #상하좌우 설정
+cnf = []
+#bfs 와 dfs로 풀기
+
+for i in range(N):
+    for j in range(N):
+        if value[i][j] == 1:
+            cnf.append(bfs(value, i, j))
+
+# 오름 차순을 위해 정렬
+cnf.sort()
+
+# 정답 출력
+
+print(len(cnf))
+for result in cnf:
+    print(result)
