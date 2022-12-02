@@ -55,7 +55,7 @@ cnf = []
 for i in range(N):
     for j in range(N):
         if value[i][j] == 1:
-            cnf.append(bfs(value, i, j))
+            bfs(value, i, j)
 
 # 오름 차순을 위해 정렬
 cnf.sort()
